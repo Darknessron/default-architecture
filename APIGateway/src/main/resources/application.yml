@@ -1,0 +1,46 @@
+spring:
+  application:  
+    name: APIGateway
+  cloud:
+    gateway:
+      discovery:
+          locator:
+            enabled: true
+            lowerCaseServiceId: true
+
+server:
+  port: 8080
+ 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8081/eureka
+    fetchRegistry: true
+
+whitelist:
+  functions:
+    - 
+      uri: /auth/captcha
+      method: GET    
+    - 
+      uri: /auth/login
+      method: POST
+    
+  
+## Enable following setting in production environemnt       
+##management:
+##  endpoints:
+##    web:    
+##      exposure:
+##        exclude: apigateway
+
+info:
+  app:
+    name: APIGateway
+    requestMapping: /
+
+logging:
+    level:
+      root: ERROR
+      org.springframework: ERROR
+      ron.architecture: DEBUG
