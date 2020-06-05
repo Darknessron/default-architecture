@@ -24,3 +24,7 @@ hs_err_pid*
 
 # Eclipse settings
 .project
+.settings
+
+# Gradle settings
+.gradle

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: EurekaServiceDiscovery
+    name: EurekaService
 
 server:
   port: 8081
