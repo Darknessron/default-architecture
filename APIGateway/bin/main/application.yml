@@ -2,7 +2,20 @@ spring:
   application:  
     name: APIGateway
   cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]': 
+            allowedOrigins: 
+              - '*'
+            allowedHeaders:
+              - '*'
+            allow-credentials: true 
+            allowedMethods:
+              - '*'              
       discovery:
           locator:
             enabled: true
@@ -16,17 +29,25 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8081/eureka
     fetchRegistry: true
-
+    
 whitelist:
   functions:
     - 
-      uri: /auth/captcha
-      method: GET    
-    - 
-      uri: /auth/login
+      uri: /auth/generateToken
       method: POST
-    
-  
+    - 
+      uri: /user/registerAccount
+      method: POST
+      
+ignorecache:
+  functions:
+    - 
+      uri: /auth/generateToken
+      method: POST
+
+jwt:
+  secret: gVxpwvWz9QprW4bKWIIryH1mycnEoiWw
+
 ## Enable following setting in production environemnt       
 ##management:
 ##  endpoints:

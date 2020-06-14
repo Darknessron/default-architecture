@@ -8,8 +8,7 @@
  */
 
 rootProject.name = 'default-microservices-architecture'
-include 'AuthService'
 include 'UserService'
 include 'APIGateway'
-include 'EurekaServiceDiscovery'
+include 'EurekaService'
 include 'DataAccessService'
