@@ -33,5 +33,6 @@ out/
 ### VS Code ###
 .vscode/
 
-### H2 DB log ###
+### H2 DB ###
+demo.mv.db
 demo.trace.db
