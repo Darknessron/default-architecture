@@ -100,12 +100,12 @@ public class TokenUtil {
 	 */
 	public static String generateJwt(JsonNode user) {
 		String result = null;
-		String role = user.get("role").asText();
+		String roleId = user.get("role").get("roleId").asText();
 		String account = user.get("account").asText();
 		Key key = getSecretKey();
 		// Expire time : 60 mins
 		result = Jwts.builder().setIssuer(ISSUER).setSubject("Role")
-				.claim("role", role)
+				.claim("role", roleId)
 				.claim("account", account)
 				.setExpiration(new Date(System.currentTimeMillis() + 3600000)).signWith(key).compact();
 		return result;

@@ -1,7 +1,15 @@
 spring:
   application:
     name: user
-
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;database=demo
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: sa
+    password: letmefree1219
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServer2012Dialect
+    show-sql: true
+    
 server:
   servlet:    encoding:      force: true
   port: 8083
@@ -11,6 +19,9 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8081/eureka
     fetchRegistry: true
+
+aes:
+  key: cg12192001@gmail
 
 info:
   app:

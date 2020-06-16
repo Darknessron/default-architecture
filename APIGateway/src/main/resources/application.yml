@@ -33,10 +33,7 @@ eureka:
 whitelist:
   functions:
     - 
-      uri: /auth/generateToken
-      method: POST
-    - 
-      uri: /user/registerAccount
+      uri: /user/login
       method: POST
       
 ignorecache:
