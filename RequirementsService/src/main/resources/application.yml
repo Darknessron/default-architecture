@@ -1,10 +1,18 @@
 spring:
   application:
     name: requirements
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;database=demo
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: sa
+    password: letmefree1219
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServer2012Dialect
+    show-sql: true
 
 server:
   servlet:    encoding:      force: true
-  port: 8082
+  port: 8085
   
 eureka:
   client:

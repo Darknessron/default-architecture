@@ -15,7 +15,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -35,8 +34,14 @@ public class Requirement implements Serializable {
 	private static final long serialVersionUID = 1080739841485707619L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Column(nullable = false)
+	private String category;
+	
+	@Column(name = "SERIALNUMBER", nullable = false)
+	private String serialNumber;
 
 	@Column(nullable = false)
 	private String subject;
@@ -44,9 +49,8 @@ public class Requirement implements Serializable {
 	@Column(nullable = false)
 	private String content;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "REQUESTER", referencedColumnName = "ID")
-	private User requester;
+	@Column(nullable = false)
+	private String requester;
 
 	@Column(name = "REQUESTTIME", nullable = false)
 	private Date requestTime;
@@ -73,6 +77,34 @@ public class Requirement implements Serializable {
 	 */
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the category
+	 */
+	public String getCategory() {
+		return category;
+	}
+
+	/**
+	 * @param category the category to set
+	 */
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	/**
+	 * @return the serialNumber
+	 */
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	/**
+	 * @param serialNumber the serialNumber to set
+	 */
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
 	}
 
 	/**
@@ -106,14 +138,14 @@ public class Requirement implements Serializable {
 	/**
 	 * @return the requester
 	 */
-	public User getRequester() {
+	public String getRequester() {
 		return requester;
 	}
 
 	/**
 	 * @param requester the requester to set
 	 */
-	public void setRequester(User requester) {
+	public void setRequester(String requester) {
 		this.requester = requester;
 	}
 

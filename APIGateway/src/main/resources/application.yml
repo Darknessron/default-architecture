@@ -35,22 +35,16 @@ whitelist:
     - 
       uri: /user/login
       method: POST
-      
-ignorecache:
-  functions:
-    - 
-      uri: /auth/generateToken
-      method: POST
 
 jwt:
   secret: gVxpwvWz9QprW4bKWIIryH1mycnEoiWw
 
-## Enable following setting in production environemnt       
-##management:
-##  endpoints:
-##    web:    
-##      exposure:
-##        exclude: apigateway
+##Enable following setting in production environemnt       
+management:
+  endpoints:
+    web:    
+      exposure:
+        include: '*'
 
 info:
   app:

@@ -55,6 +55,11 @@ public class TokenUtil {
 		return ISSUER.equals(claims.getIssuer()) && now.before(claims.getExpiration());
 	}
 	
+	public static String getAccount(String token)	{
+		Claims claims = extractJwt(token);
+		return claims.get("account", String.class);
+	}
+	
 	/**
 	 * Renew the expiration of given token
 	 * @param token

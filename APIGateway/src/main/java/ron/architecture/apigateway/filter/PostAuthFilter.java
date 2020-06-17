@@ -14,6 +14,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -40,13 +41,14 @@ public class PostAuthFilter implements GlobalFilter, Ordered {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+		logger.debug("into post");
 		ServerHttpResponse originalResponse = exchange.getResponse();
 		DataBufferFactory bufferFactory = originalResponse.bufferFactory();
 		ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
 			@Override
 			public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
-				// Only modify JSON response
-				if (!originalResponse.getHeaders().getContentType().includes(MediaType.APPLICATION_JSON)) {
+				// Only modify JSON response and status 200
+				if (!originalResponse.getHeaders().getContentType().includes(MediaType.APPLICATION_JSON) || !HttpStatus.OK.equals(originalResponse.getStatusCode())) {
 					return chain.filter(exchange);
 				}
 				if (body instanceof Flux) {
@@ -69,8 +71,12 @@ public class PostAuthFilter implements GlobalFilter, Ordered {
 						ObjectNode node = null;
 						try {
 							jsonNode = new ObjectMapper().readTree(responseJson);
-							String token = jsonNode.get("token") == null? null:jsonNode.get("token").asText();
-							
+						}
+						catch (Exception e) {
+							logger.error("Error while parsing response to JsonNode", e);
+						}
+							String token = exchange.getRequest().getHeaders().getFirst(PreAuthFilter.TOKEN);
+						try	{	
 							if (StringUtils.isEmpty(token)) {								
 								token = TokenUtil.generateJwt(jsonNode.get("user"));
 							}else	{
@@ -78,8 +84,8 @@ public class PostAuthFilter implements GlobalFilter, Ordered {
 							}
 							node = jsonNode.deepCopy(); 
 							node.put("token", token);
-						} catch (Exception e) {
-							logger.error("Error while parsing response to JsonNode", e);
+						}catch(Exception e)	{
+							logger.error("Error while deal with Token", e);
 						}
 
 						byte[] write = node.toString().getBytes();

@@ -14,6 +14,6 @@ import ron.architecture.entity.Requirement;
  * @date 2020-06-14 22:57:30
  */
 @Component
-public interface RequirementsRepository extends PagingAndSortingRepository<Requirement, Long> {
+public interface RequirementsRepository extends PagingAndSortingRepository<Requirement, Long>, CustomRequirementsRepository {
 
 }

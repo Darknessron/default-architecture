@@ -43,6 +43,8 @@ GO
 
 CREATE TABLE [dbo].[REQUIREMENT](
 	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[CATEGORY] [nvarchar](10) NOT NULL,
+	[SERIALNUMBER] [nvarchar](50) NOT NULL,
 	[SUBJECT] [nvarchar](64) NOT NULL,
 	[CONTENT] [nvarchar](max) NOT NULL,
 	[REQUESTER] [nvarchar](16) NOT NULL,

@@ -3,18 +3,19 @@
  */
 package ron.architecture.apigateway.filter;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.CACHED_REQUEST_BODY_ATTR;
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.CACHED_SERVER_HTTP_REQUEST_DECORATOR_ATTR;
+
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 import reactor.core.publisher.Mono;
-import ron.architecture.apigateway.holder.IgnoreCacheHolder;
 
 /**
  * @author Ron.Tseng
@@ -24,18 +25,30 @@ import ron.architecture.apigateway.holder.IgnoreCacheHolder;
 @Component
 public class EnableCacheRequestBodyFilter implements GlobalFilter, Ordered {
 
-	@Autowired
-	private IgnoreCacheHolder ignoreList;
-
 	@Override
 	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE;
+		return Ordered.HIGHEST_PRECEDENCE + 1000;
 	}
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		boolean isIgnore = isIgnore(exchange.getRequest());
-		if (isIgnore) return chain.filter(exchange);
+		// the cached ServerHttpRequest is used when the ServerWebExchange can not be
+		// mutated, for example, during a predicate where the body is read, but still
+		// needs to be cached.
+		ServerHttpRequest cachedRequest = exchange
+				.getAttributeOrDefault(CACHED_SERVER_HTTP_REQUEST_DECORATOR_ATTR, null);
+		if (cachedRequest != null) {
+			exchange.getAttributes().remove(CACHED_SERVER_HTTP_REQUEST_DECORATOR_ATTR);
+			return chain.filter(exchange.mutate().request(cachedRequest).build());
+		}
+
+		//
+		DataBuffer body = exchange.getAttributeOrDefault(CACHED_REQUEST_BODY_ATTR, null);
+
+		if (body != null) {
+			return chain.filter(exchange);
+		}
+
 		return ServerWebExchangeUtils.cacheRequestBody(exchange, (serverHttpRequest) -> {
 			// don't mutate and build if same request object
 			if (serverHttpRequest == exchange.getRequest()) {
@@ -44,22 +57,4 @@ public class EnableCacheRequestBodyFilter implements GlobalFilter, Ordered {
 			return chain.filter(exchange.mutate().request(serverHttpRequest).build());
 		});
 	}
-
-
-	/**
-	 * Check the request URI and Method is in whitelist or not
-	 * @param request
-	 * @return
-	 */
-	private boolean isIgnore(ServerHttpRequest request) {		
-		String uri = request.getURI().getPath();
-		String method = request.getMethodValue();
-
-		if (StringUtils.isEmpty(uri) || StringUtils.isEmpty(method))
-			return false;
-		return ignoreList.getFunctions().stream().parallel()
-				.anyMatch(function -> (uri.equals(function.getUri()) && method.equals(function.getMethod())));
-
-	}
-
 }

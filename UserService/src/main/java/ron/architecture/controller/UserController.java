@@ -85,7 +85,7 @@ public class UserController {
 		result.put("account", user.getAccount());
 		result.put("name", user.getName());
 		result.put("email", user.getEmail());
-		role.put("roleId", user.getRole().getId());
+		role.put("roleId", user.getRole().getRoleId());
 		role.put("roleName", user.getRole().getName());
 		
 		result.set("role", role);
